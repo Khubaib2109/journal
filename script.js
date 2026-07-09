@@ -282,93 +282,402 @@ const lengthGuides = {
   ]
 };
 
+const promptStyles = {
+  mixed: "Mixed / surprise me",
+  scene: "Scene-based",
+  dialogue: "Dialogue",
+  memory: "Memory",
+  argument: "Argument / essayish",
+  body: "Body and senses",
+  ethical: "Ethical",
+  strangeform: "Strange form"
+};
+
+const commonScenes = [
+  "a car park at dusk",
+  "the quiet before a kettle boils",
+  "a half-read article left open in another tab",
+  "a footpath after rain",
+  "a checkout line moving too slowly",
+  "a room after everyone has gone",
+  "a train window with your face faintly reflected in it",
+  "a note you wrote and did not send",
+  "a bag you keep meaning to unpack",
+  "a song heard from another room",
+  "a small domestic mess you suddenly found moving",
+  "a menu, timetable, receipt, or map",
+  "the first five minutes after waking",
+  "the last light on a building",
+  "a sentence you kept rereading"
+];
+
+const promptForms = [
+  "a police report for a feeling",
+  "a museum label for an ordinary object",
+  "a weather forecast for your inner life",
+  "a footnote to today",
+  "a letter from your future self",
+  "a field note from a species called You",
+  "a small court judgment about a private rule",
+  "an instruction manual for surviving this mood",
+  "a travel guide to a familiar room",
+  "a recipe for a mistake",
+  "minutes from a meeting between your body and your mind"
+];
+
+const sentenceStarters = [
+  "The thing I keep avoiding is",
+  "I noticed it first when",
+  "The kindest interpretation is",
+  "The more honest interpretation is",
+  "I would rather call it",
+  "I have been mistaking",
+  "Something in me still believes",
+  "The day was trying to teach me",
+  "I do not know whether this is wisdom or tiredness, but",
+  "The evidence is thinner than I want it to be, because"
+];
+
 const promptTemplates = [
-  ({ topic, secondary, mood, length, rng }) => {
-    const image = pick(topic.images, rng);
-    const tension = pick(topic.tensions, rng);
-    const thinker = pick(topic.thinkers, rng);
-    const question = pick(topic.questions, rng);
-    const secondLine = secondary ? `Then pass the same moment through ${secondary.name.toLowerCase()}: what changes?` : `Let ${thinker} sit beside the thought without turning the entry into an essay.`;
-    return {
-      title: `Begin with ${withArticle(image)}`,
-      text: `Begin with ${withArticle(image)}. Use it to think about ${tension}. ${question}`,
-      followups: [secondLine, mood.instruction, pick(lengthGuides[length], rng), pick(mood.closers, rng)]
-    };
+  {
+    style: "scene",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const image = pick(topic.images, rng);
+      const scene = pick(commonScenes, rng);
+      const tension = pick(topic.tensions, rng);
+      return {
+        title: "Start with a scene, not an idea",
+        text: `Begin inside ${withArticle(scene)}. Do not explain the day yet. Let ${withArticle(image)} enter the scene, then ask what it reveals about ${tension}.`,
+        followups: [
+          "Write the first paragraph as if it belongs in a novel rather than a diary.",
+          secondary ? `Then let ${secondary.name.toLowerCase()} quietly change the meaning of the scene.` : "Only after the scene is clear, let the philosophical thought appear.",
+          pick(lengthGuides[length], rng),
+          pick(mood.closers, rng)
+        ]
+      };
+    }
   },
-  ({ topic, secondary, mood, length, rng }) => {
-    const tension = pick(topic.tensions, rng);
-    const thinker = pick(topic.thinkers, rng);
-    const image = pick(topic.images, rng);
-    const secondaryBit = secondary ? ` Bring in ${secondary.name.toLowerCase()} only when the first topic starts to feel too easy.` : "";
-    return {
-      title: `The hidden argument of the day`,
-      text: `Assume today was secretly making an argument about ${tension}. What evidence did it offer? What did it leave out?`,
-      followups: [
-        `Use ${withArticle(image)} as your first piece of evidence.`,
-        `Imagine ${thinker} disagreeing with your interpretation.${secondaryBit}`,
-        mood.instruction,
-        pick(lengthGuides[length], rng)
-      ]
-    };
+  {
+    style: "scene",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const image = pick(topic.images, rng);
+      const question = pick(topic.questions, rng);
+      return {
+        title: `Begin with ${withArticle(image)}`,
+        text: `Begin with ${withArticle(image)}, but make it do something unexpected. It might accuse you, comfort you, bore you, or make the whole day look slightly different. Then answer: ${question}`,
+        followups: [
+          secondary ? `Let ${secondary.name.toLowerCase()} arrive halfway through as a second light source.` : mood.instruction,
+          "Keep the entry close to things you could touch, hear, or misremember.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
   },
-  ({ topic, secondary, mood, length, rng }) => {
-    const question = pick(topic.questions, rng);
-    const image = pick(topic.images, rng);
-    const thinker = pick(topic.thinkers, rng);
-    return {
-      title: `A letter from the question`,
-      text: `Write a letter from this question to yourself: “${question}” Let it be kind, accusatory, funny, or badly timed.`,
-      followups: [
-        `It should mention ${withArticle(image)}.`,
-        secondary ? `It should also misunderstand something about ${secondary.name.toLowerCase()}.` : `It can borrow one habit of mind from ${thinker}.`,
-        mood.instruction,
-        pick(mood.closers, rng)
-      ]
-    };
+  {
+    style: "scene",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const scene = pick(commonScenes, rng);
+      const tension = pick(topic.tensions, rng);
+      const thinker = pick(topic.thinkers, rng);
+      return {
+        title: "The ordinary object became suspicious",
+        text: `Choose ${withArticle(scene)} and treat it as suspicious evidence. What is it evidence of: ${tension}, or something else entirely?`,
+        followups: [
+          `Let ${thinker} be wrong about one detail of your day.`,
+          secondary ? `Use ${secondary.name.toLowerCase()} as a counter-reading.` : "Do not let the object become a neat symbol too quickly.",
+          pick(mood.closers, rng)
+        ]
+      };
+    }
   },
-  ({ topic, secondary, mood, length, rng }) => {
-    const tension = pick(topic.tensions, rng);
-    const question = pick(topic.questions, rng);
-    const secondaryBit = secondary ? `, especially when seen through ${secondary.name.toLowerCase()}` : "";
-    return {
-      title: `The rule underneath the mood`,
-      text: `Name the rule you seemed to be living by today${secondaryBit}. Was it chosen, inherited, convenient, or just quietly obeyed?`,
-      followups: [
-        `Test that rule against this tension: ${tension}.`,
-        `Then answer the less tidy question: ${question}`,
-        mood.instruction,
-        pick(lengthGuides[length], rng)
-      ]
-    };
+  {
+    style: "dialogue",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const question = pick(topic.questions, rng);
+      const image = pick(topic.images, rng);
+      return {
+        title: "A conversation you did not have",
+        text: `Write the conversation you almost had today, but let the unsaid thing ask the first question: “${question}”`,
+        followups: [
+          `Give one speaker ${withArticle(image)} to look at instead of making eye contact.`,
+          secondary ? `Let the conversation accidentally drift into ${secondary.name.toLowerCase()}.` : "Let both people be partly right and partly self-protective.",
+          mood.instruction,
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
   },
-  ({ topic, secondary, mood, length, rng }) => {
-    const image = pick(topic.images, rng);
-    const tension = pick(topic.tensions, rng);
-    const thinker = pick(topic.thinkers, rng);
-    return {
-      title: `Make the small thing stand for the whole`,
-      text: `Choose ${withArticle(image)}. Look at it hard enough that it starts to stand in for the whole day. What does it reveal about ${tension}?`,
-      followups: [
-        `Do not begin with a grand claim. Begin with what was physically there.`,
-        secondary ? `Halfway through, let ${secondary.name.toLowerCase()} interrupt the scene.` : `Halfway through, let ${thinker} ask an inconvenient question.`,
-        mood.instruction,
-        pick(mood.closers, rng)
-      ]
-    };
+  {
+    style: "dialogue",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const thinker = pick(topic.thinkers, rng);
+      const tension = pick(topic.tensions, rng);
+      return {
+        title: "Interview your mood",
+        text: `Stage a brief interview with your mood. You are allowed to be sceptical. Ask it what it knows about ${tension} that your more sensible self keeps missing.`,
+        followups: [
+          `At some point, let ${thinker} interrupt with a question that is annoying but useful.`,
+          secondary ? `Ask the mood what it thinks of ${secondary.name.toLowerCase()}.` : "Give the mood one concrete habit, like checking the time or straightening a sleeve.",
+          pick(mood.closers, rng)
+        ]
+      };
+    }
   },
-  ({ topic, secondary, mood, length, rng }) => {
-    const question = pick(topic.questions, rng);
-    const tension = pick(topic.tensions, rng);
-    return {
-      title: `A useful failure`,
-      text: `Write about something today that did not resolve properly. Treat the failure as information about ${tension}, not as a verdict on you.`,
-      followups: [
-        `Ask: ${question}`,
-        secondary ? `Then ask what ${secondary.name.toLowerCase()} makes visible that the first topic hides.` : "Separate what happened from the story your mind immediately made about it.",
-        mood.instruction,
-        pick(lengthGuides[length], rng)
-      ]
-    };
+  {
+    style: "dialogue",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const image = pick(topic.images, rng);
+      const question = pick(topic.questions, rng);
+      return {
+        title: "Let the object speak first",
+        text: `Imagine ${withArticle(image)} could leave you a voice note. What would it say about the way you moved through today?`,
+        followups: [
+          `Reply to it honestly, then ask: ${question}`,
+          secondary ? `The object should misunderstand ${secondary.name.toLowerCase()} in a revealing way.` : "Keep it intimate rather than whimsical.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "memory",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const tension = pick(topic.tensions, rng);
+      const scene = pick(commonScenes, rng);
+      return {
+        title: "An older memory changed colour",
+        text: `Find a memory that returned today, even faintly. Put it beside ${withArticle(scene)}. What changes when you read the memory through ${tension}?`,
+        followups: [
+          "Write one paragraph from the point of view of who you were then.",
+          "Write one paragraph from the point of view of who you are now.",
+          secondary ? `Then ask what ${secondary.name.toLowerCase()} helps you forgive, or refuses to forgive.` : mood.instruction,
+          pick(mood.closers, rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "memory",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const question = pick(topic.questions, rng);
+      return {
+        title: "The biographer gets it wrong",
+        text: `Imagine a future biographer trying to explain you from today’s evidence. What would they get completely wrong?`,
+        followups: [
+          `Correct them by answering: ${question}`,
+          secondary ? `Let one correction involve ${secondary.name.toLowerCase()}.` : "Include one small fact that would look meaningless to anyone else.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "memory",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const image = pick(topic.images, rng);
+      const tension = pick(topic.tensions, rng);
+      return {
+        title: "A message from an old self",
+        text: `Write a note from an old version of you who has just found ${withArticle(image)}. What does that version misunderstand about ${tension}?`,
+        followups: [
+          "Do not make the old self foolish. Make them limited, tender, or overconfident in a recognisable way.",
+          secondary ? `Let your present self answer using ${secondary.name.toLowerCase()} as a lens.` : pick(mood.closers, rng),
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "argument",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const tension = pick(topic.tensions, rng);
+      const thinker = pick(topic.thinkers, rng);
+      const image = pick(topic.images, rng);
+      return {
+        title: "The hidden argument of the day",
+        text: `Assume today was secretly making an argument about ${tension}. What evidence did it offer, and what did it conveniently leave out?`,
+        followups: [
+          `Use ${withArticle(image)} as your first piece of evidence.`,
+          `Imagine ${thinker} disagreeing with your interpretation.`,
+          secondary ? `Then let ${secondary.name.toLowerCase()} complicate your conclusion.` : "End by separating evidence from mood.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "argument",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const starter = pick(sentenceStarters, rng);
+      const question = pick(topic.questions, rng);
+      return {
+        title: "Seven sentences, no ornament",
+        text: `Write seven sentences. Start the first with: “${starter}...” Make each sentence answer, resist, or revise the one before it.`,
+        followups: [
+          `The fourth sentence must ask: ${question}`,
+          secondary ? `The sixth sentence must bring in ${secondary.name.toLowerCase()} without sounding academic.` : "The sixth sentence must admit what you still do not know.",
+          pick(mood.closers, rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "argument",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const tension = pick(topic.tensions, rng);
+      const question = pick(topic.questions, rng);
+      return {
+        title: "Thesis, objection, revision",
+        text: `Make one claim about ${tension}. Then argue against yourself using something that actually happened today, not a hypothetical.`,
+        followups: [
+          `Somewhere in the entry, answer: ${question}`,
+          secondary ? `Use ${secondary.name.toLowerCase()} for the revision, not the first claim.` : "Let the revised claim be smaller and truer than the first one.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "body",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const tension = pick(topic.tensions, rng);
+      return {
+        title: "What your body noticed first",
+        text: `Before writing what you thought, write what your body seemed to know today: where it tightened, rushed, softened, resisted, or went quiet. How did that bodily knowledge change ${tension}?`,
+        followups: [
+          "Use one bodily detail that feels almost too small to include.",
+          secondary ? `Then ask whether ${secondary.name.toLowerCase()} makes that detail more or less intelligible.` : mood.instruction,
+          pick(mood.closers, rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "body",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const scene = pick(commonScenes, rng);
+      const image = pick(topic.images, rng);
+      return {
+        title: "Five senses, one problem",
+        text: `Describe ${withArticle(scene)} through five senses, even if you have to invent one slightly. Then let one detail become the problem: ${withArticle(image)}.`,
+        followups: [
+          "Do not explain the metaphor until the second half.",
+          secondary ? `Let ${secondary.name.toLowerCase()} disturb the sensory account.` : "Ask what attention changes when it stops trying to be impressive.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "body",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const question = pick(topic.questions, rng);
+      return {
+        title: "The body is a witness",
+        text: `Treat your body as a witness giving careful testimony about today. What did it see that your mind tried to narrate away?`,
+        followups: [
+          `Cross-examine it with this question: ${question}`,
+          secondary ? `Ask whether ${secondary.name.toLowerCase()} changes what counts as evidence.` : "Let the testimony remain a little incomplete.",
+          pick(mood.closers, rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "ethical",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const tension = pick(topic.tensions, rng);
+      const image = pick(topic.images, rng);
+      return {
+        title: "The day on trial",
+        text: `Put the day on trial for what it did to you, or what you did inside it. The charge concerns ${tension}.`,
+        followups: [
+          `Exhibit A is ${withArticle(image)}.`,
+          "Let the defence make the most generous argument it can.",
+          secondary ? `Let ${secondary.name.toLowerCase()} write the judgment.` : "Do not make the judgment harsher than the evidence allows.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "ethical",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const question = pick(topic.questions, rng);
+      const thinker = pick(topic.thinkers, rng);
+      return {
+        title: "A private obligation",
+        text: `Write about a small obligation you felt today: to reply, apologise, resist, help, remember, stay quiet, or look away. What made it small? What made it not small?`,
+        followups: [
+          `Answer: ${question}`,
+          `Let ${thinker} notice the part you wanted to skip.`,
+          secondary ? `Now pass the obligation through ${secondary.name.toLowerCase()}.` : pick(mood.closers, rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "ethical",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const tension = pick(topic.tensions, rng);
+      return {
+        title: "The rule you obeyed without naming",
+        text: `Name one rule you seemed to obey today. Was it chosen, inherited, convenient, kind, cowardly, protective, or just familiar?`,
+        followups: [
+          `Test the rule against this tension: ${tension}.`,
+          secondary ? `Ask what ${secondary.name.toLowerCase()} exposes about the rule.` : "Write the rule again in plainer language.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "strangeform",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const form = pick(promptForms, rng);
+      const tension = pick(topic.tensions, rng);
+      const image = pick(topic.images, rng);
+      return {
+        title: sentenceCase(form),
+        text: `Write today as ${form}. It must include ${withArticle(image)} and a problem involving ${tension}.`,
+        followups: [
+          "Let the form do some of the thinking for you.",
+          secondary ? `Smuggle ${secondary.name.toLowerCase()} in as a subplot.` : "Keep one line oddly funny if the mood allows it.",
+          pick(mood.closers, rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "strangeform",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const question = pick(topic.questions, rng);
+      return {
+        title: "A map of the invisible thing",
+        text: `Draw, describe, or imagine a map of something invisible from today: a worry, a longing, an argument, a silence, a rule, a memory. Where is the dangerous part? Where is the false shortcut?`,
+        followups: [
+          `Somewhere on the map, write this question: ${question}`,
+          secondary ? `Add ${secondary.name.toLowerCase()} as a weather system moving across the map.` : "Name one place on the map that you are not ready to visit yet.",
+          pick(lengthGuides[length], rng)
+        ]
+      };
+    }
+  },
+  {
+    style: "strangeform",
+    create: ({ topic, secondary, mood, length, rng }) => {
+      const image = pick(topic.images, rng);
+      const thinker = pick(topic.thinkers, rng);
+      return {
+        title: "Instructions for a feeling",
+        text: `Write an instruction manual for a feeling you had today. The manual must include a warning, a maintenance note, and one illustration: ${withArticle(image)}.`,
+        followups: [
+          `Add a note from ${thinker} in the margin.`,
+          secondary ? `The troubleshooting section should accidentally reveal something about ${secondary.name.toLowerCase()}.` : "The final instruction should be useful but slightly embarrassing.",
+          pick(mood.closers, rng)
+        ]
+      };
+    }
   }
 ];
 
@@ -382,6 +691,7 @@ const els = {
   secondaryTopicSelect: document.querySelector("#secondaryTopicSelect"),
   moodSelect: document.querySelector("#moodSelect"),
   lengthSelect: document.querySelector("#lengthSelect"),
+  promptStyleSelect: document.querySelector("#promptStyleSelect"),
   promptTitle: document.querySelector("#promptTitle"),
   promptText: document.querySelector("#promptText"),
   promptFollowups: document.querySelector("#promptFollowups"),
@@ -441,7 +751,7 @@ function attachEvents() {
   els.importInput.addEventListener("change", importEntries);
   els.themeToggle.addEventListener("click", toggleTheme);
 
-  [els.topicSelect, els.secondaryTopicSelect, els.moodSelect, els.lengthSelect].forEach(control => {
+  [els.topicSelect, els.secondaryTopicSelect, els.moodSelect, els.lengthSelect, els.promptStyleSelect].forEach(control => {
     control.addEventListener("change", () => generatePrompt({ daily: false }));
   });
 }
@@ -454,18 +764,33 @@ function generatePrompt({ daily }) {
     : null;
   const mood = moods[els.moodSelect.value] || moods.tender;
   const length = els.lengthSelect.value;
+  const promptStyle = els.promptStyleSelect.value || "mixed";
   const seedText = daily
-    ? `${getDateKey()}-${topic.id}-${secondary?.id || "none"}-${els.moodSelect.value}-${length}`
-    : `${Date.now()}-${Math.random()}-${topic.id}`;
+    ? `${getDateKey()}-${topic.id}-${secondary?.id || "none"}-${els.moodSelect.value}-${length}-${promptStyle}`
+    : `${Date.now()}-${Math.random()}-${topic.id}-${promptStyle}`;
   const rng = daily ? seededRandom(seedText) : Math.random;
-  const template = pick(promptTemplates, rng);
-  const prompt = template({ topic, secondary, mood, length, rng });
+  const availableTemplates = promptStyle === "mixed"
+    ? promptTemplates
+    : promptTemplates.filter(template => template.style === promptStyle);
+
+  let selectedTemplate = pick(availableTemplates.length ? availableTemplates : promptTemplates, rng);
+  let prompt = selectedTemplate.create({ topic, secondary, mood, length, rng });
+
+  if (!daily) {
+    const recent = getRecentPromptKeys();
+    for (let attempt = 0; attempt < 8 && recent.includes(promptKey(prompt)); attempt += 1) {
+      selectedTemplate = pick(availableTemplates.length ? availableTemplates : promptTemplates, Math.random);
+      prompt = selectedTemplate.create({ topic, secondary, mood, length, rng: Math.random });
+    }
+    rememberPrompt(prompt);
+  }
 
   state.currentPrompt = {
     topic: topic.name,
     secondaryTopic: secondary?.name || null,
     mood: els.moodSelect.options[els.moodSelect.selectedIndex].text,
     length,
+    promptStyle: promptStyles[promptStyle] || promptStyles.mixed,
     title: prompt.title,
     text: prompt.text,
     followups: prompt.followups,
@@ -831,6 +1156,31 @@ function withArticle(phrase) {
 
   const article = /^[aeiou]/i.test(clean) ? "an" : "a";
   return `${article} ${clean}`;
+}
+
+
+function promptKey(prompt) {
+  return `${prompt.title}|${prompt.text}`.toLowerCase().replace(/\s+/g, " ").slice(0, 220);
+}
+
+function getRecentPromptKeys() {
+  try {
+    return JSON.parse(localStorage.getItem("graceNotesRecentPromptKeys") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function rememberPrompt(prompt) {
+  const recent = getRecentPromptKeys();
+  const next = [promptKey(prompt), ...recent.filter(key => key !== promptKey(prompt))].slice(0, 35);
+  localStorage.setItem("graceNotesRecentPromptKeys", JSON.stringify(next));
+}
+
+function sentenceCase(value) {
+  const text = String(value || "").trim();
+  if (!text) return text;
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function toast(message) {
