@@ -220,465 +220,245 @@ const topics = [
     ]
   }
 ];
-
-const moods = {
-  tender: {
-    instruction: "Write gently, as if explaining something delicate to a person you still want to become.",
-    closers: [
-      "End with one sentence of mercy toward yourself.",
-      "End by naming one thing that does not need to be solved tonight.",
-      "End with a tiny image rather than a conclusion."
-    ]
-  },
-  analytical: {
-    instruction: "Make one claim, test it against the day, then admit where it breaks down.",
-    closers: [
-      "End by revising your first claim.",
-      "End with the objection you cannot quite answer.",
-      "End by separating evidence from mood."
+const voices = {
+  unforced: {
+    label: "Unforced and wandering",
+    texture: [
+      "Let the thought move sideways if it wants to.",
+      "No need to resolve the feeling.",
+      "The interesting part might be the tangent.",
+      "Leave the edges a little unfinished."
     ]
   },
   literary: {
-    instruction: "Start with a concrete image and let the thought grow out of it slowly.",
-    closers: [
-      "End on a sensory detail.",
-      "End with a sentence you would underline in a novel.",
-      "End before the thought becomes too clean."
+    label: "Literary / image-led",
+    texture: [
+      "Stay with the object until it starts behaving strangely.",
+      "Let one sentence be more beautiful than useful.",
+      "Give the day a little weather, a little shadow, a little room.",
+      "Notice the bit of the scene that refuses to become a lesson."
+    ]
+  },
+  analytical: {
+    label: "Curious / essay-ish",
+    texture: [
+      "Treat the thought as provisional rather than true.",
+      "Let yourself follow the objection, even if it ruins the neat version.",
+      "Define one word badly, then define it again with more honesty.",
+      "Think on the page, not before the page."
     ]
   },
   strange: {
-    instruction: "Let the prompt become slightly absurd, then take the absurdity seriously.",
-    closers: [
-      "End with the weirdest true sentence you can write.",
-      "End by asking what an alien would misunderstand.",
-      "End with a rule for living that may or may not be a joke."
+    label: "A little strange",
+    texture: [
+      "Let the premise be odd and the feeling be real.",
+      "Misread the day on purpose and see what appears.",
+      "Let an ordinary object have one private opinion.",
+      "Make room for the sentence that feels slightly embarrassing but true."
     ]
   },
-  plain: {
-    instruction: "Write plainly. No performance. Just the thought, the scene, and what it did to you.",
-    closers: [
-      "End with what you actually think.",
-      "End with what you need next.",
-      "End with one honest sentence."
+  tender: {
+    label: "Soft but not sentimental",
+    texture: [
+      "Be kind without smoothing the thought flat.",
+      "Let the entry hold sympathy and suspicion at once.",
+      "Write as if the feeling deserves company, not a cure.",
+      "The tender version can still be sharp."
     ]
   }
 };
 
-const lengthGuides = {
-  five: [
-    "Write for five minutes without backspacing.",
-    "Choose one sentence from the entry and make it sharper.",
-    "Stop while it still feels alive."
+const lengthTextures = {
+  short: [
+    "A few sentences is enough.",
+    "One page corner, one scrap of thought.",
+    "Stop before the thought turns obedient.",
+    "Let it be a note, not an entry."
   ],
-  fifteen: [
-    "Write one scene, one argument, and one contradiction.",
-    "Let the entry have a turn: begin somewhere ordinary, then let the ordinary become philosophical.",
-    "Spend the final two minutes asking what you avoided saying."
+  medium: [
+    "Let the entry wander for a while before deciding what it is about.",
+    "Follow one detour that seems irrelevant.",
+    "The second thought may be better than the first.",
+    "Let the prompt loosen into a small essay, scene, or confession."
   ],
   long: [
-    "Divide the entry into three movements: the scene, the philosophical problem, and the personal cost.",
-    "Let yourself contradict yourself without tidying it too early.",
-    "Return to the opening image at the end and see if it has changed."
+    "Return to the first image later and see if it has changed.",
+    "Let the entry have weather: a beginning temperature, a shift, an aftertaste.",
+    "Keep the contradictions in view rather than settling them too early.",
+    "Allow one memory, one theory, and one ordinary detail to argue quietly."
   ]
 };
 
 const promptStyles = {
-  mixed: "Mixed / surprise me",
-  scene: "Scene-based",
-  dialogue: "Dialogue",
-  memory: "Memory",
-  argument: "Argument / essayish",
-  body: "Body and senses",
-  ethical: "Ethical",
-  strangeform: "Strange form"
+  mixed: "Mixed drift",
+  stray: "Stray thought",
+  image: "Object / scene",
+  question: "Loose question",
+  philosopher: "Philosopher spark",
+  contradiction: "Contradiction",
+  memory: "Memory glimmer",
+  sentence: "First sentence",
+  form: "Odd form"
 };
 
-const commonScenes = [
-  "a car park at dusk",
-  "the quiet before a kettle boils",
-  "a half-read article left open in another tab",
-  "a footpath after rain",
-  "a checkout line moving too slowly",
-  "a room after everyone has gone",
-  "a train window with your face faintly reflected in it",
-  "a note you wrote and did not send",
-  "a bag you keep meaning to unpack",
-  "a song heard from another room",
-  "a small domestic mess you suddenly found moving",
-  "a menu, timetable, receipt, or map",
-  "the first five minutes after waking",
-  "the last light on a building",
-  "a sentence you kept rereading"
+const referenceModes = {
+  subtle: "Quiet companion",
+  thinker: "Thinker",
+  school: "School of thought",
+  none: "None"
+};
+
+const schoolsByTopic = {
+  time: ["Augustine on time", "Bergson's durée", "existentialism", "phenomenology", "memento mori", "literary modernism"],
+  consciousness: ["phenomenology", "ordinary language philosophy", "materialism", "panpsychism", "introspection scepticism", "embodied cognition"],
+  meaning: ["existentialism", "absurdism", "nihilism", "stoicism", "negative capability", "religious doubt without the religion"],
+  memory: ["Proustian memory", "narrative identity", "hermeneutics", "autobiographical memory", "Kundera's lightness", "family mythology"],
+  art: ["aesthetic attention", "the sublime", "romanticism", "Berger on looking", "beauty as consolation", "art as preservation"],
+  ethics: ["Rawlsian fairness", "virtue ethics", "care ethics", "utilitarian discomfort", "Sen's capability approach", "moral luck"],
+  lawpower: ["legal positivism", "natural law", "interpretivism", "Foucault and discipline", "Cover's nomos", "the rule of recognition"],
+  relationships: ["care ethics", "relational selfhood", "recognition theory", "ordinary language intimacy", "attachment and interpretation", "the ethics of attention"],
+  mountains: ["the sublime", "romanticism", "Kant on awe", "Thoreau-ish solitude", "eco-phenomenology", "anti-metaphor nature writing"],
+  knowledge: ["Popperian falsification", "Kuhn's paradigms", "fallibilism", "Wittgensteinian language-games", "epistemic humility", "model uncertainty"],
+  ai: ["the Turing test", "functionalism", "Chinese Room worries", "simulation and experience", "posthumanism", "moral status of artificial minds"]
+};
+
+const thinkerNotes = {
+  time: [
+    { name: "Augustine", note: "time as something strangely obvious until you try to describe it" },
+    { name: "Bergson", note: "lived duration rather than clock-time" },
+    { name: "Kundera", note: "lightness, repetition, and the strange weight of a single life" },
+    { name: "Julian Barnes", note: "memory and ageing without heroic consolation" }
+  ],
+  consciousness: [
+    { name: "Thomas Nagel", note: "the private feel of experience" },
+    { name: "Wittgenstein", note: "the limits of what can be said about inner life" },
+    { name: "phenomenology", note: "consciousness as it appears from the inside" },
+    { name: "Eric Schwitzgebel", note: "how unreliable introspection can be" }
+  ],
+  meaning: [
+    { name: "Camus", note: "absurdity without surrender" },
+    { name: "Sartre", note: "freedom as both possibility and burden" },
+    { name: "Simone de Beauvoir", note: "meaning made with and against other people" },
+    { name: "Rilke", note: "staying with the difficult question rather than solving it" }
+  ],
+  memory: [
+    { name: "Proust", note: "memory arriving through objects and senses" },
+    { name: "Kundera", note: "forgetting as both mercy and violence" },
+    { name: "narrative identity", note: "the self as a story that keeps being edited" },
+    { name: "Julian Barnes", note: "the unreliability of the version that survived" }
+  ],
+  art: [
+    { name: "John Berger", note: "looking as an active, interested act" },
+    { name: "Elaine Scarry", note: "beauty as something that asks to be shared" },
+    { name: "Rilke", note: "art as a demand to change one's life, or at least notice it" },
+    { name: "Donna Tartt", note: "beauty, damage, possession, and survival tangled together" }
+  ],
+  ethics: [
+    { name: "Rawls", note: "fairness imagined from behind your own luck" },
+    { name: "care ethics", note: "obligation as something close, partial, and lived" },
+    { name: "Amartya Sen", note: "justice as what people are actually able to do and be" },
+    { name: "moral luck", note: "how much of goodness depends on what did not happen" }
+  ],
+  lawpower: [
+    { name: "Hart", note: "rules as social facts people recognise and use" },
+    { name: "Fuller", note: "law's inner morality and the demands of legality" },
+    { name: "Dworkin", note: "principle hidden inside interpretation" },
+    { name: "Foucault", note: "power appearing through discipline, habits, rooms, forms" }
+  ],
+  relationships: [
+    { name: "care ethics", note: "love as attention, burden, practice" },
+    { name: "recognition theory", note: "being seen by others as part of becoming yourself" },
+    { name: "Sally Rooney", note: "intimacy as conversation, misreading, class, silence" },
+    { name: "Ocean Vuong", note: "tenderness that remembers the wound" }
+  ],
+  mountains: [
+    { name: "Kant", note: "the sublime as awe mixed with safety and fear" },
+    { name: "Thoreau", note: "solitude as a way of hearing thought differently" },
+    { name: "Mary Oliver", note: "attention to the natural world without needing to own it" },
+    { name: "eco-phenomenology", note: "the body thinking with weather, distance, ground" }
+  ],
+  knowledge: [
+    { name: "Popper", note: "knowledge sharpened by what could prove it wrong" },
+    { name: "Kuhn", note: "the frame that decides what counts as a fact" },
+    { name: "fallibilism", note: "believing something while knowing belief can fail" },
+    { name: "Wittgenstein", note: "meaning living in use, not floating above it" }
+  ],
+  ai: [
+    { name: "Turing", note: "intelligence judged through conversation and behaviour" },
+    { name: "Searle", note: "the gap between symbol handling and understanding" },
+    { name: "functionalism", note: "mind as what the system does" },
+    { name: "posthumanism", note: "personhood becoming less neat at the edges" }
+  ]
+};
+
+const strayThings = [
+  "the moment after a notification disappears",
+  "the exact smell of an old stairwell",
+  "a stranger's half-sentence overheard badly",
+  "the relief of cancelling something",
+  "a room that seemed to have been waiting for you",
+  "a tiny envy you would prefer not to dignify",
+  "the way a day can feel used before it begins",
+  "the private politics of a group chat",
+  "a face you made when nobody was watching",
+  "the strange morality of being tired",
+  "a purchase that briefly promised a new self",
+  "the loneliness of doing admin",
+  "the romance of a clean table",
+  "a thought that felt borrowed",
+  "a sentence you have outgrown but still repeat"
 ];
 
-const promptForms = [
-  "a police report for a feeling",
-  "a museum label for an ordinary object",
-  "a weather forecast for your inner life",
-  "a footnote to today",
-  "a letter from your future self",
-  "a field note from a species called You",
-  "a small court judgment about a private rule",
-  "an instruction manual for surviving this mood",
-  "a travel guide to a familiar room",
-  "a recipe for a mistake",
-  "minutes from a meeting between your body and your mind"
+const firstSentences = [
+  "I keep thinking about the smallness of the thing, which is probably why it matters.",
+  "Today had the texture of something I could not quite name.",
+  "Nothing dramatic happened, except that I noticed myself believing something.",
+  "There is a version of this day that would make me look better, but I am less interested in that one.",
+  "I was not sad exactly; I was arranged around an absence.",
+  "The thought arrived disguised as irritation.",
+  "For a few seconds, I felt older than my own plans.",
+  "The object was ordinary enough to become suspicious.",
+  "I did not know I was waiting until the waiting stopped.",
+  "The day had one loose thread and I kept touching it."
 ];
 
-const sentenceStarters = [
-  "The thing I keep avoiding is",
-  "I noticed it first when",
-  "The kindest interpretation is",
-  "The more honest interpretation is",
-  "I would rather call it",
-  "I have been mistaking",
-  "Something in me still believes",
-  "The day was trying to teach me",
-  "I do not know whether this is wisdom or tiredness, but",
-  "The evidence is thinner than I want it to be, because"
+const looseForms = [
+  "a list of things that almost meant something",
+  "a footnote to a feeling you do not want to over-explain",
+  "a marginal note in a book you have not written",
+  "a weather report from a room you spent too long in",
+  "a paragraph that keeps changing its mind",
+  "a field note about the species you become when tired",
+  "an overheard conversation between two versions of you",
+  "a museum caption for a very ordinary object",
+  "a private superstition, stated seriously",
+  "a letter to the day, but only the middle paragraph"
 ];
 
-const promptTemplates = [
-  {
-    style: "scene",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const image = pick(topic.images, rng);
-      const scene = pick(commonScenes, rng);
-      const tension = pick(topic.tensions, rng);
-      return {
-        title: "Start with a scene, not an idea",
-        text: `Begin inside ${withArticle(scene)}. Do not explain the day yet. Let ${withArticle(image)} enter the scene, then ask what it reveals about ${tension}.`,
-        followups: [
-          "Write the first paragraph as if it belongs in a novel rather than a diary.",
-          secondary ? `Then let ${secondary.name.toLowerCase()} quietly change the meaning of the scene.` : "Only after the scene is clear, let the philosophical thought appear.",
-          pick(lengthGuides[length], rng),
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "scene",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const image = pick(topic.images, rng);
-      const question = pick(topic.questions, rng);
-      return {
-        title: `Begin with ${withArticle(image)}`,
-        text: `Begin with ${withArticle(image)}, but make it do something unexpected. It might accuse you, comfort you, bore you, or make the whole day look slightly different. Then answer: ${question}`,
-        followups: [
-          secondary ? `Let ${secondary.name.toLowerCase()} arrive halfway through as a second light source.` : mood.instruction,
-          "Keep the entry close to things you could touch, hear, or misremember.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "scene",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const scene = pick(commonScenes, rng);
-      const tension = pick(topic.tensions, rng);
-      const thinker = pick(topic.thinkers, rng);
-      return {
-        title: "The ordinary object became suspicious",
-        text: `Choose ${withArticle(scene)} and treat it as suspicious evidence. What is it evidence of: ${tension}, or something else entirely?`,
-        followups: [
-          `Let ${thinker} be wrong about one detail of your day.`,
-          secondary ? `Use ${secondary.name.toLowerCase()} as a counter-reading.` : "Do not let the object become a neat symbol too quickly.",
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "dialogue",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const question = pick(topic.questions, rng);
-      const image = pick(topic.images, rng);
-      return {
-        title: "A conversation you did not have",
-        text: `Write the conversation you almost had today, but let the unsaid thing ask the first question: “${question}”`,
-        followups: [
-          `Give one speaker ${withArticle(image)} to look at instead of making eye contact.`,
-          secondary ? `Let the conversation accidentally drift into ${secondary.name.toLowerCase()}.` : "Let both people be partly right and partly self-protective.",
-          mood.instruction,
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "dialogue",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const thinker = pick(topic.thinkers, rng);
-      const tension = pick(topic.tensions, rng);
-      return {
-        title: "Interview your mood",
-        text: `Stage a brief interview with your mood. You are allowed to be sceptical. Ask it what it knows about ${tension} that your more sensible self keeps missing.`,
-        followups: [
-          `At some point, let ${thinker} interrupt with a question that is annoying but useful.`,
-          secondary ? `Ask the mood what it thinks of ${secondary.name.toLowerCase()}.` : "Give the mood one concrete habit, like checking the time or straightening a sleeve.",
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "dialogue",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const image = pick(topic.images, rng);
-      const question = pick(topic.questions, rng);
-      return {
-        title: "Let the object speak first",
-        text: `Imagine ${withArticle(image)} could leave you a voice note. What would it say about the way you moved through today?`,
-        followups: [
-          `Reply to it honestly, then ask: ${question}`,
-          secondary ? `The object should misunderstand ${secondary.name.toLowerCase()} in a revealing way.` : "Keep it intimate rather than whimsical.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "memory",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const tension = pick(topic.tensions, rng);
-      const scene = pick(commonScenes, rng);
-      return {
-        title: "An older memory changed colour",
-        text: `Find a memory that returned today, even faintly. Put it beside ${withArticle(scene)}. What changes when you read the memory through ${tension}?`,
-        followups: [
-          "Write one paragraph from the point of view of who you were then.",
-          "Write one paragraph from the point of view of who you are now.",
-          secondary ? `Then ask what ${secondary.name.toLowerCase()} helps you forgive, or refuses to forgive.` : mood.instruction,
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "memory",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const question = pick(topic.questions, rng);
-      return {
-        title: "The biographer gets it wrong",
-        text: `Imagine a future biographer trying to explain you from today’s evidence. What would they get completely wrong?`,
-        followups: [
-          `Correct them by answering: ${question}`,
-          secondary ? `Let one correction involve ${secondary.name.toLowerCase()}.` : "Include one small fact that would look meaningless to anyone else.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "memory",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const image = pick(topic.images, rng);
-      const tension = pick(topic.tensions, rng);
-      return {
-        title: "A message from an old self",
-        text: `Write a note from an old version of you who has just found ${withArticle(image)}. What does that version misunderstand about ${tension}?`,
-        followups: [
-          "Do not make the old self foolish. Make them limited, tender, or overconfident in a recognisable way.",
-          secondary ? `Let your present self answer using ${secondary.name.toLowerCase()} as a lens.` : pick(mood.closers, rng),
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "argument",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const tension = pick(topic.tensions, rng);
-      const thinker = pick(topic.thinkers, rng);
-      const image = pick(topic.images, rng);
-      return {
-        title: "The hidden argument of the day",
-        text: `Assume today was secretly making an argument about ${tension}. What evidence did it offer, and what did it conveniently leave out?`,
-        followups: [
-          `Use ${withArticle(image)} as your first piece of evidence.`,
-          `Imagine ${thinker} disagreeing with your interpretation.`,
-          secondary ? `Then let ${secondary.name.toLowerCase()} complicate your conclusion.` : "End by separating evidence from mood.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "argument",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const starter = pick(sentenceStarters, rng);
-      const question = pick(topic.questions, rng);
-      return {
-        title: "Seven sentences, no ornament",
-        text: `Write seven sentences. Start the first with: “${starter}...” Make each sentence answer, resist, or revise the one before it.`,
-        followups: [
-          `The fourth sentence must ask: ${question}`,
-          secondary ? `The sixth sentence must bring in ${secondary.name.toLowerCase()} without sounding academic.` : "The sixth sentence must admit what you still do not know.",
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "argument",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const tension = pick(topic.tensions, rng);
-      const question = pick(topic.questions, rng);
-      return {
-        title: "Thesis, objection, revision",
-        text: `Make one claim about ${tension}. Then argue against yourself using something that actually happened today, not a hypothetical.`,
-        followups: [
-          `Somewhere in the entry, answer: ${question}`,
-          secondary ? `Use ${secondary.name.toLowerCase()} for the revision, not the first claim.` : "Let the revised claim be smaller and truer than the first one.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "body",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const tension = pick(topic.tensions, rng);
-      return {
-        title: "What your body noticed first",
-        text: `Before writing what you thought, write what your body seemed to know today: where it tightened, rushed, softened, resisted, or went quiet. How did that bodily knowledge change ${tension}?`,
-        followups: [
-          "Use one bodily detail that feels almost too small to include.",
-          secondary ? `Then ask whether ${secondary.name.toLowerCase()} makes that detail more or less intelligible.` : mood.instruction,
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "body",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const scene = pick(commonScenes, rng);
-      const image = pick(topic.images, rng);
-      return {
-        title: "Five senses, one problem",
-        text: `Describe ${withArticle(scene)} through five senses, even if you have to invent one slightly. Then let one detail become the problem: ${withArticle(image)}.`,
-        followups: [
-          "Do not explain the metaphor until the second half.",
-          secondary ? `Let ${secondary.name.toLowerCase()} disturb the sensory account.` : "Ask what attention changes when it stops trying to be impressive.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "body",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const question = pick(topic.questions, rng);
-      return {
-        title: "The body is a witness",
-        text: `Treat your body as a witness giving careful testimony about today. What did it see that your mind tried to narrate away?`,
-        followups: [
-          `Cross-examine it with this question: ${question}`,
-          secondary ? `Ask whether ${secondary.name.toLowerCase()} changes what counts as evidence.` : "Let the testimony remain a little incomplete.",
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "ethical",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const tension = pick(topic.tensions, rng);
-      const image = pick(topic.images, rng);
-      return {
-        title: "The day on trial",
-        text: `Put the day on trial for what it did to you, or what you did inside it. The charge concerns ${tension}.`,
-        followups: [
-          `Exhibit A is ${withArticle(image)}.`,
-          "Let the defence make the most generous argument it can.",
-          secondary ? `Let ${secondary.name.toLowerCase()} write the judgment.` : "Do not make the judgment harsher than the evidence allows.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "ethical",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const question = pick(topic.questions, rng);
-      const thinker = pick(topic.thinkers, rng);
-      return {
-        title: "A private obligation",
-        text: `Write about a small obligation you felt today: to reply, apologise, resist, help, remember, stay quiet, or look away. What made it small? What made it not small?`,
-        followups: [
-          `Answer: ${question}`,
-          `Let ${thinker} notice the part you wanted to skip.`,
-          secondary ? `Now pass the obligation through ${secondary.name.toLowerCase()}.` : pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "ethical",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const tension = pick(topic.tensions, rng);
-      return {
-        title: "The rule you obeyed without naming",
-        text: `Name one rule you seemed to obey today. Was it chosen, inherited, convenient, kind, cowardly, protective, or just familiar?`,
-        followups: [
-          `Test the rule against this tension: ${tension}.`,
-          secondary ? `Ask what ${secondary.name.toLowerCase()} exposes about the rule.` : "Write the rule again in plainer language.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "strangeform",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const form = pick(promptForms, rng);
-      const tension = pick(topic.tensions, rng);
-      const image = pick(topic.images, rng);
-      return {
-        title: sentenceCase(form),
-        text: `Write today as ${form}. It must include ${withArticle(image)} and a problem involving ${tension}.`,
-        followups: [
-          "Let the form do some of the thinking for you.",
-          secondary ? `Smuggle ${secondary.name.toLowerCase()} in as a subplot.` : "Keep one line oddly funny if the mood allows it.",
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "strangeform",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const question = pick(topic.questions, rng);
-      return {
-        title: "A map of the invisible thing",
-        text: `Draw, describe, or imagine a map of something invisible from today: a worry, a longing, an argument, a silence, a rule, a memory. Where is the dangerous part? Where is the false shortcut?`,
-        followups: [
-          `Somewhere on the map, write this question: ${question}`,
-          secondary ? `Add ${secondary.name.toLowerCase()} as a weather system moving across the map.` : "Name one place on the map that you are not ready to visit yet.",
-          pick(lengthGuides[length], rng)
-        ]
-      };
-    }
-  },
-  {
-    style: "strangeform",
-    create: ({ topic, secondary, mood, length, rng }) => {
-      const image = pick(topic.images, rng);
-      const thinker = pick(topic.thinkers, rng);
-      return {
-        title: "Instructions for a feeling",
-        text: `Write an instruction manual for a feeling you had today. The manual must include a warning, a maintenance note, and one illustration: ${withArticle(image)}.`,
-        followups: [
-          `Add a note from ${thinker} in the margin.`,
-          secondary ? `The troubleshooting section should accidentally reveal something about ${secondary.name.toLowerCase()}.` : "The final instruction should be useful but slightly embarrassing.",
-          pick(mood.closers, rng)
-        ]
-      };
-    }
-  }
+const bridgePhrases = [
+  "without turning it into a lesson",
+  "as if it were only half your thought",
+  "with no obligation to arrive anywhere useful",
+  "as if the thought belongs partly to someone else",
+  "with enough looseness for a tangent",
+  "while distrusting the neat explanation",
+  "as if the object knows something but refuses to say it directly",
+  "and let the mood contradict the idea",
+  "without deciding too quickly whether it is beautiful or sad",
+  "as if the day were a draft, not a verdict"
+];
+
+const questionFragments = [
+  "What did I almost notice?",
+  "What changed shape when I stopped looking straight at it?",
+  "Which part of today felt rehearsed?",
+  "What did I want the scene to mean, and what did it actually offer?",
+  "Where did the day become slightly theatrical?",
+  "What did I make more serious than it was? What did I make less serious?",
+  "What did I inherit today: a rule, a fear, a taste, a silence?",
+  "What would remain if I removed the explanation?",
+  "What tiny thing had a philosophical aftertaste?",
+  "Which thought felt true only because I was tired?"
 ];
 
 const state = {
@@ -692,9 +472,11 @@ const els = {
   moodSelect: document.querySelector("#moodSelect"),
   lengthSelect: document.querySelector("#lengthSelect"),
   promptStyleSelect: document.querySelector("#promptStyleSelect"),
+  referenceSelect: document.querySelector("#referenceSelect"),
   promptTitle: document.querySelector("#promptTitle"),
   promptText: document.querySelector("#promptText"),
   promptFollowups: document.querySelector("#promptFollowups"),
+  promptReference: document.querySelector("#promptReference"),
   topicPill: document.querySelector("#topicPill"),
   datePill: document.querySelector("#datePill"),
   generateButton: document.querySelector("#generateButton"),
@@ -726,16 +508,12 @@ function init() {
 
 function populateSelectors() {
   topics.forEach(topic => {
-    const option = new Option(topic.name, topic.id);
-    els.topicSelect.add(option);
+    els.topicSelect.add(new Option(topic.name, topic.id));
     els.filterTopicSelect.add(new Option(topic.name, topic.name));
   });
 
   els.secondaryTopicSelect.add(new Option("None", "none"));
-  topics.forEach(topic => {
-    const option = new Option(topic.name, topic.id);
-    els.secondaryTopicSelect.add(option);
-  });
+  topics.forEach(topic => els.secondaryTopicSelect.add(new Option(topic.name, topic.id)));
 }
 
 function attachEvents() {
@@ -751,7 +529,7 @@ function attachEvents() {
   els.importInput.addEventListener("change", importEntries);
   els.themeToggle.addEventListener("click", toggleTheme);
 
-  [els.topicSelect, els.secondaryTopicSelect, els.moodSelect, els.lengthSelect, els.promptStyleSelect].forEach(control => {
+  [els.topicSelect, els.secondaryTopicSelect, els.moodSelect, els.lengthSelect, els.promptStyleSelect, els.referenceSelect].forEach(control => {
     control.addEventListener("change", () => generatePrompt({ daily: false }));
   });
 }
@@ -762,25 +540,21 @@ function generatePrompt({ daily }) {
   const secondary = secondaryValue !== "none" && secondaryValue !== topic.id
     ? topics.find(item => item.id === secondaryValue)
     : null;
-  const mood = moods[els.moodSelect.value] || moods.tender;
-  const length = els.lengthSelect.value;
+  const voice = voices[els.moodSelect.value] || voices.unforced;
+  const length = els.lengthSelect.value || "medium";
   const promptStyle = els.promptStyleSelect.value || "mixed";
+  const referenceMode = els.referenceSelect?.value || "subtle";
   const seedText = daily
-    ? `${getDateKey()}-${topic.id}-${secondary?.id || "none"}-${els.moodSelect.value}-${length}-${promptStyle}`
+    ? `${getDateKey()}-${topic.id}-${secondary?.id || "none"}-${els.moodSelect.value}-${length}-${promptStyle}-${referenceMode}`
     : `${Date.now()}-${Math.random()}-${topic.id}-${promptStyle}`;
   const rng = daily ? seededRandom(seedText) : Math.random;
-  const availableTemplates = promptStyle === "mixed"
-    ? promptTemplates
-    : promptTemplates.filter(template => template.style === promptStyle);
 
-  let selectedTemplate = pick(availableTemplates.length ? availableTemplates : promptTemplates, rng);
-  let prompt = selectedTemplate.create({ topic, secondary, mood, length, rng });
+  let prompt = buildPrompt({ topic, secondary, voice, length, promptStyle, referenceMode, rng });
 
   if (!daily) {
     const recent = getRecentPromptKeys();
-    for (let attempt = 0; attempt < 8 && recent.includes(promptKey(prompt)); attempt += 1) {
-      selectedTemplate = pick(availableTemplates.length ? availableTemplates : promptTemplates, Math.random);
-      prompt = selectedTemplate.create({ topic, secondary, mood, length, rng: Math.random });
+    for (let attempt = 0; attempt < 12 && recent.includes(promptKey(prompt)); attempt += 1) {
+      prompt = buildPrompt({ topic, secondary, voice, length, promptStyle, referenceMode, rng: Math.random });
     }
     rememberPrompt(prompt);
   }
@@ -788,17 +562,116 @@ function generatePrompt({ daily }) {
   state.currentPrompt = {
     topic: topic.name,
     secondaryTopic: secondary?.name || null,
-    mood: els.moodSelect.options[els.moodSelect.selectedIndex].text,
+    voice: voice.label,
     length,
-    promptStyle: promptStyles[promptStyle] || promptStyles.mixed,
+    promptStyle: promptStyles[prompt.shape] || promptStyles[promptStyle] || promptStyles.mixed,
+    referenceMode: referenceModes[referenceMode] || referenceModes.subtle,
     title: prompt.title,
     text: prompt.text,
     followups: prompt.followups,
+    reference: prompt.reference,
     generatedAt: new Date().toISOString(),
     daily
   };
 
   renderPrompt();
+}
+
+function buildPrompt({ topic, secondary, voice, length, promptStyle, referenceMode, rng }) {
+  const shape = promptStyle === "mixed" ? pick(Object.keys(promptStyles).filter(key => key !== "mixed"), rng) : promptStyle;
+  const image = pick([...topic.images, ...strayThings], rng);
+  const scene = pick(strayThings, rng);
+  const tension = pick(topic.tensions, rng);
+  const question = pick([...topic.questions, ...questionFragments], rng);
+  const bridge = pick(bridgePhrases, rng);
+  const voiceLine = pick(voice.texture, rng);
+  const lengthLine = pick(lengthTextures[length] || lengthTextures.medium, rng);
+  const secondaryLine = secondary ? secondaryNudge(secondary, rng) : null;
+  const reference = makeReference(topic, secondary, referenceMode, rng);
+
+  const variations = {
+    stray: () => ({
+      title: "A loose thought to follow",
+      text: `${sentenceCase(scene)}. ${question} ${sentenceCase(bridge)}.`,
+      followups: compact([voiceLine, secondaryLine])
+    }),
+    image: () => ({
+      title: cleanTitle(image),
+      text: `${sentenceCase(image)}: not as a metaphor yet, just as a thing sitting there. What does it start to disturb about ${tension}?`,
+      followups: compact(["Let the object stay ordinary for longer than feels natural.", secondaryLine, lengthLine])
+    }),
+    question: () => ({
+      title: "One question, no assignment",
+      text: `${question} Let the answer begin somewhere mildly irrelevant: ${scene}.`,
+      followups: compact([voiceLine, secondaryLine])
+    }),
+    philosopher: () => ({
+      title: "A companion, not a topic",
+      text: `${reference ? `${reference.label} might hover near this: ${reference.note}. ` : "A philosopher may be nearby, but not in charge. "}${question} Let your own day remain the main evidence.`,
+      followups: compact(["You can borrow the idea, misread it, or ignore it halfway through.", secondaryLine])
+    }),
+    contradiction: () => ({
+      title: "The contradiction is the point",
+      text: `I believe one thing about ${tension}; I behave as if I believe another. Start there, but let the contradiction stay human rather than becoming a problem to solve.`,
+      followups: compact([`${sentenceCase(image)} may be part of the evidence.`, voiceLine, secondaryLine])
+    }),
+    memory: () => ({
+      title: "A memory with a loose edge",
+      text: `A memory returns, not dramatically, maybe only because of ${image}. What is it trying to revise about ${tension}?`,
+      followups: compact(["The memory does not have to be reliable to be useful.", secondaryLine, lengthLine])
+    }),
+    sentence: () => ({
+      title: "Start with this sentence",
+      text: `${pick(firstSentences, rng)} Keep going from there, even if the sentence turns out to be false by the end.`,
+      followups: compact([voiceLine, secondaryLine])
+    }),
+    form: () => ({
+      title: "A slightly odd container",
+      text: `Write ${pick(looseForms, rng)}. Let it brush against ${tension}, but do not force it to behave like a proper reflection.`,
+      followups: compact([`${sentenceCase(image)} can appear if it wants to.`, secondaryLine])
+    })
+  };
+
+  const created = (variations[shape] || variations.stray)();
+  return {
+    shape,
+    title: created.title,
+    text: created.text,
+    followups: created.followups,
+    reference
+  };
+}
+
+function secondaryNudge(secondary, rng) {
+  const fragments = [
+    `${secondary.name} may enter only as a side-glance.`,
+    `Let ${secondary.name.toLowerCase()} interrupt the thought once, then disappear.`,
+    `Somewhere in the background: ${pick(secondary.tensions, rng)}.`,
+    `The second lens is ${secondary.name.toLowerCase()}, but it does not need to win.`
+  ];
+  return pick(fragments, rng);
+}
+
+function makeReference(topic, secondary, mode, rng) {
+  if (mode === "none") return null;
+
+  const referenceTopic = secondary && rng() > 0.55 ? secondary : topic;
+  if (mode === "school") {
+    const school = pick(schoolsByTopic[referenceTopic.id] || schoolsByTopic.time, rng);
+    return { label: school, note: `a possible school/thread for ${referenceTopic.name.toLowerCase()}` };
+  }
+
+  const note = pick(thinkerNotes[referenceTopic.id] || [], rng);
+  if (!note) return null;
+
+  if (mode === "thinker") return { label: note.name, note: note.note };
+
+  const formats = [
+    { label: note.name, note: note.note },
+    { label: pick(schoolsByTopic[referenceTopic.id] || schoolsByTopic.time, rng), note: `a quiet background thread for ${referenceTopic.name.toLowerCase()}` },
+    { label: note.name, note: `maybe useful, maybe not: ${note.note}` }
+  ];
+  return pick(formats, rng);
 }
 
 function renderPrompt() {
@@ -807,6 +680,19 @@ function renderPrompt() {
   els.promptText.textContent = prompt.text;
   els.topicPill.textContent = prompt.secondaryTopic ? `${prompt.topic} × ${prompt.secondaryTopic}` : prompt.topic;
   els.datePill.textContent = prompt.daily ? `Seeded for ${formatDate(new Date())}` : "Freshly remixed";
+
+  els.promptReference.innerHTML = "";
+  if (prompt.reference) {
+    const reference = document.createElement("div");
+    reference.className = "philosophy-hint";
+    const label = document.createElement("span");
+    label.textContent = "Possible companion";
+    const text = document.createElement("p");
+    text.innerHTML = `<strong>${escapeHtml(prompt.reference.label)}</strong> — ${escapeHtml(prompt.reference.note)}`;
+    reference.append(label, text);
+    els.promptReference.appendChild(reference);
+  }
+
   els.promptFollowups.innerHTML = "";
   prompt.followups.forEach(line => {
     const p = document.createElement("p");
@@ -822,8 +708,10 @@ function renderPrompt() {
 
 function copyPrompt() {
   const prompt = state.currentPrompt;
-  const text = `${prompt.title}\n\n${prompt.text}\n\n${prompt.followups.map(item => `• ${item}`).join("\n")}`;
-  navigator.clipboard.writeText(text).then(() => toast("Prompt copied"));
+  const bits = [prompt.title, "", prompt.text];
+  if (prompt.reference) bits.push("", `Possible companion: ${prompt.reference.label} — ${prompt.reference.note}`);
+  if (prompt.followups.length) bits.push("", ...prompt.followups.map(item => `• ${item}`));
+  navigator.clipboard.writeText(bits.join("\n")).then(() => toast("Prompt copied"));
 }
 
 function saveEntry() {
@@ -844,19 +732,18 @@ function saveEntry() {
   state.entries.unshift(entry);
   persistEntries();
   renderEntries();
-  clearEntry(false);
-  toast("Entry saved in this browser");
+  clearEntry({ keepPrompt: true });
+  toast("Entry saved");
 }
 
-function clearEntry(showToast = true) {
+function clearEntry() {
   els.entryTitle.value = "";
   els.entryText.value = "";
-  if (showToast) toast("Entry cleared");
 }
 
 function loadEntries() {
   try {
-    state.entries = JSON.parse(localStorage.getItem("graceNotesEntries") || "[]");
+    state.entries = JSON.parse(localStorage.getItem("grace-notes-entries") || "[]");
   } catch {
     state.entries = [];
   }
@@ -864,248 +751,299 @@ function loadEntries() {
 }
 
 function persistEntries() {
-  localStorage.setItem("graceNotesEntries", JSON.stringify(state.entries));
+  localStorage.setItem("grace-notes-entries", JSON.stringify(state.entries));
 }
 
 function renderEntries() {
   const query = els.searchEntries.value.trim().toLowerCase();
-  const selectedTopic = els.filterTopicSelect.value;
-  const entries = state.entries.filter(entry => {
-    const entryTopic = entry.prompt?.topic || "";
-    const topicMatches = selectedTopic === "all" || entryTopic === selectedTopic;
-    const haystack = [
-      entry.title,
-      entry.body,
-      entry.prompt?.title,
-      entry.prompt?.text,
-      entry.prompt?.topic,
-      entry.prompt?.secondaryTopic
-    ].join(" ").toLowerCase();
-    return topicMatches && haystack.includes(query);
+  const topicFilter = els.filterTopicSelect.value;
+
+  const filtered = state.entries.filter(entry => {
+    const prompt = entry.prompt || {};
+    const haystack = [entry.title, entry.body, prompt.title, prompt.text, prompt.topic, prompt.secondaryTopic, prompt.reference?.label, prompt.reference?.note].filter(Boolean).join(" ").toLowerCase();
+    const topicMatch = topicFilter === "all" || prompt.topic === topicFilter || prompt.secondaryTopic === topicFilter;
+    return topicMatch && (!query || haystack.includes(query));
   });
 
   els.entriesList.innerHTML = "";
-  if (!entries.length) {
+
+  if (!filtered.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = state.entries.length ? "No entries match that filter." : "No saved entries yet. Your first one can be tiny.";
+    empty.textContent = state.entries.length ? "No entries match that filter." : "No entries saved yet.";
     els.entriesList.appendChild(empty);
     return;
   }
 
-  entries.forEach(entry => {
+  filtered.forEach(entry => {
     const card = document.createElement("article");
     card.className = "entry-card";
-    const topicLabel = entry.prompt?.secondaryTopic
-      ? `${entry.prompt.topic} × ${entry.prompt.secondaryTopic}`
-      : entry.prompt?.topic || "No topic";
-    card.innerHTML = `
-      <div class="entry-card-header">
-        <div>
-          <h3>${escapeHtml(entry.title)}</h3>
-          <p class="entry-date">${escapeHtml(topicLabel)} · ${formatDateTime(new Date(entry.createdAt))}</p>
-        </div>
-        <button class="delete-button" type="button" aria-label="Delete entry" data-delete="${entry.id}">Delete</button>
-      </div>
-      <p class="entry-prompt">${escapeHtml(entry.prompt?.text || "Prompt unavailable")}</p>
-      <p>${escapeHtml(truncate(entry.body, 420))}</p>
-    `;
+
+    const meta = document.createElement("div");
+    meta.className = "entry-meta";
+    meta.textContent = `${formatDateTime(new Date(entry.createdAt))} · ${entry.prompt?.topic || "No topic"}`;
+
+    const title = document.createElement("h3");
+    title.textContent = entry.title;
+
+    const prompt = document.createElement("p");
+    prompt.className = "saved-prompt";
+    const promptBits = [entry.prompt?.title, entry.prompt?.text].filter(Boolean).join(" — ");
+    prompt.textContent = promptBits;
+
+    const body = document.createElement("p");
+    body.textContent = entry.body.length > 420 ? `${entry.body.slice(0, 420)}…` : entry.body;
+
+    const actions = document.createElement("div");
+    actions.className = "entry-actions row-actions";
+
+    const restore = document.createElement("button");
+    restore.className = "ghost-button";
+    restore.type = "button";
+    restore.textContent = "Open";
+    restore.addEventListener("click", () => openEntry(entry));
+
+    const remove = document.createElement("button");
+    remove.className = "ghost-button danger";
+    remove.type = "button";
+    remove.textContent = "Delete";
+    remove.addEventListener("click", () => deleteEntry(entry.id));
+
+    actions.append(restore, remove);
+    card.append(meta, title, prompt, body, actions);
     els.entriesList.appendChild(card);
   });
+}
 
-  document.querySelectorAll("[data-delete]").forEach(button => {
-    button.addEventListener("click", event => {
-      const id = event.currentTarget.getAttribute("data-delete");
-      state.entries = state.entries.filter(entry => entry.id !== id);
-      persistEntries();
-      renderEntries();
-      toast("Entry deleted");
-    });
-  });
+function openEntry(entry) {
+  els.entryTitle.value = entry.title;
+  els.entryText.value = entry.body;
+  document.querySelector(".writing-section").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function deleteEntry(id) {
+  state.entries = state.entries.filter(entry => entry.id !== id);
+  persistEntries();
+  renderEntries();
+  toast("Entry deleted");
 }
 
 function exportEntriesAsText() {
-  if (!state.entries.length) {
-    toast("No entries to export yet");
+  const topicFilter = els.filterTopicSelect.value;
+  const entriesToExport = topicFilter === "all"
+    ? state.entries
+    : state.entries.filter(entry => entry.prompt?.topic === topicFilter || entry.prompt?.secondaryTopic === topicFilter);
+
+  if (!entriesToExport.length) {
+    toast("No entries to export");
     return;
   }
 
-  const lines = state.entries.map(entry => {
+  const text = entriesToExport.map(entry => {
     const prompt = entry.prompt || {};
-    const topicLine = prompt.secondaryTopic
-      ? `${prompt.topic} × ${prompt.secondaryTopic}`
-      : prompt.topic || "No topic recorded";
-    const followups = Array.isArray(prompt.followups) && prompt.followups.length
-      ? `\nFollow-ups:\n${prompt.followups.map(item => `- ${item}`).join("\n")}`
-      : "";
-
+    const reference = prompt.reference ? `\nPossible companion: ${prompt.reference.label} — ${prompt.reference.note}` : "";
     return [
-      "============================================================",
-      entry.title || "Untitled entry",
+      entry.title,
       formatDateTime(new Date(entry.createdAt)),
-      `Topic: ${topicLine}`,
+      `Topic: ${[prompt.topic, prompt.secondaryTopic].filter(Boolean).join(" × ") || "No topic"}`,
+      prompt.title ? `Prompt: ${prompt.title}` : "",
+      prompt.text || "",
+      reference,
       "",
-      "Prompt:",
-      prompt.text || "Prompt unavailable",
-      followups,
-      "",
-      "Entry:",
-      entry.body || ""
-    ].join("\n");
-  });
+      entry.body
+    ].filter(Boolean).join("\n");
+  }).join("\n\n------------------------------\n\n");
 
-  downloadFile(
-    lines.join("\n\n"),
-    `grace-notes-entries-${getDateKey()}.txt`,
-    "text/plain;charset=utf-8"
-  );
+  downloadFile(`grace-notes-${getDateKey()}.txt`, text, "text/plain;charset=utf-8");
 }
 
 function exportEntries() {
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    app: "Grace Notes",
-    entries: state.entries
-  };
-  downloadFile(
-    JSON.stringify(payload, null, 2),
-    `grace-notes-entries-${getDateKey()}.json`,
-    "application/json"
-  );
+  if (!state.entries.length) {
+    toast("No entries to export");
+    return;
+  }
+  downloadFile(`grace-notes-backup-${getDateKey()}.json`, JSON.stringify(state.entries, null, 2), "application/json");
 }
 
 function importEntries(event) {
   const file = event.target.files?.[0];
   if (!file) return;
+
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      const parsed = JSON.parse(reader.result);
-      const importedEntries = Array.isArray(parsed) ? parsed : parsed.entries;
-      if (!Array.isArray(importedEntries)) throw new Error("Invalid entries file");
+      const imported = JSON.parse(reader.result);
+      if (!Array.isArray(imported)) throw new Error("Invalid file");
       const existingIds = new Set(state.entries.map(entry => entry.id));
-      const normalised = importedEntries
-        .filter(entry => entry && entry.body)
-        .map(entry => ({ ...entry, id: entry.id || String(Date.now() + Math.random()) }))
-        .filter(entry => !existingIds.has(entry.id));
-      state.entries = [...normalised, ...state.entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const cleaned = imported
+        .filter(entry => entry && entry.body && !existingIds.has(entry.id))
+        .map(entry => ({ ...entry, id: entry.id || String(Date.now() + Math.random()) }));
+      state.entries = [...cleaned, ...state.entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       persistEntries();
       renderEntries();
-      toast(`Imported ${normalised.length} entries`);
+      toast(`${cleaned.length} entries imported`);
     } catch {
-      toast("Could not import that file");
+      toast("That JSON file could not be imported");
+    } finally {
+      els.importInput.value = "";
     }
   };
   reader.readAsText(file);
-  event.target.value = "";
 }
 
 function renderTopics() {
+  els.topicsGrid.innerHTML = "";
   topics.forEach(topic => {
     const card = document.createElement("article");
     card.className = "topic-card";
-    card.innerHTML = `
-      <h3>${escapeHtml(topic.name)}</h3>
-      <p>${escapeHtml(topic.description)}</p>
-      <button class="ghost-button" type="button" data-topic="${topic.id}">Use this shelf</button>
-    `;
-    els.topicsGrid.appendChild(card);
-  });
 
-  document.querySelectorAll("[data-topic]").forEach(button => {
-    button.addEventListener("click", event => {
-      els.topicSelect.value = event.currentTarget.getAttribute("data-topic");
+    const heading = document.createElement("h3");
+    heading.textContent = topic.name;
+
+    const description = document.createElement("p");
+    description.textContent = topic.description;
+
+    const thinkers = document.createElement("p");
+    thinkers.className = "thinkers-line";
+    thinkers.textContent = `Possible companions: ${(thinkerNotes[topic.id] || []).slice(0, 3).map(item => item.name).join(", ")}`;
+
+    card.append(heading, description, thinkers);
+    card.addEventListener("click", () => {
+      els.topicSelect.value = topic.id;
       generatePrompt({ daily: false });
-      document.querySelector("#prompter").scrollIntoView({ behavior: "smooth" });
+      document.querySelector("#prompter").scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    els.topicsGrid.appendChild(card);
   });
 }
 
-function downloadFile(content, filename, type) {
+function downloadFile(filename, content, type) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
-  document.body.appendChild(link);
   link.click();
-  link.remove();
   URL.revokeObjectURL(url);
 }
 
-function initialiseScrollReveals() {
-  const items = document.querySelectorAll(".reveal-on-scroll");
-  if (!items.length) return;
+function loadTheme() {
+  const stored = localStorage.getItem("grace-notes-theme");
+  const theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.dataset.theme = theme;
+  els.themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+}
 
-  if (!("IntersectionObserver" in window)) {
-    items.forEach(item => item.classList.add("is-visible"));
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem("grace-notes-theme", next);
+  els.themeToggle.textContent = next === "dark" ? "Light mode" : "Dark mode";
+}
+
+function initialiseScrollReveals() {
+  const revealEls = [...document.querySelectorAll(".reveal-on-scroll")];
+  if (!window.IntersectionObserver) {
+    revealEls.forEach(el => el.classList.add("revealed"));
     return;
   }
 
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
+        entry.target.classList.add("revealed");
         observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
 
-  items.forEach(item => observer.observe(item));
+  revealEls.forEach(el => observer.observe(el));
 }
 
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-  localStorage.setItem("graceNotesTheme", isDark ? "dark" : "light");
-  els.themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
-}
-
-function loadTheme() {
-  const saved = localStorage.getItem("graceNotesTheme");
-  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const useDark = saved ? saved === "dark" : prefersDark;
-  document.body.classList.toggle("dark", useDark);
-  els.themeToggle.textContent = useDark ? "Light mode" : "Dark mode";
-}
-
-function pick(array, rng = Math.random) {
-  return array[Math.floor(rng() * array.length)];
-}
-
-function seededRandom(seedText) {
-  let seed = 2166136261;
-  for (let i = 0; i < seedText.length; i += 1) {
-    seed ^= seedText.charCodeAt(i);
-    seed = Math.imul(seed, 16777619);
+function toast(message) {
+  let el = document.querySelector(".toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "toast";
+    document.body.appendChild(el);
   }
-  return function random() {
-    seed += 0x6D2B79F5;
-    let t = seed;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 2200);
 }
 
-function getDateKey() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
+function getRecentPromptKeys() {
+  try {
+    return JSON.parse(localStorage.getItem("grace-notes-recent-prompts") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function rememberPrompt(prompt) {
+  const recent = [promptKey(prompt), ...getRecentPromptKeys()].slice(0, 20);
+  localStorage.setItem("grace-notes-recent-prompts", JSON.stringify([...new Set(recent)]));
+}
+
+function promptKey(prompt) {
+  return `${prompt.title}|${prompt.text}`.slice(0, 180);
+}
+
+function pick(list, rng = Math.random) {
+  if (!list || !list.length) return "";
+  return list[Math.floor(rng() * list.length)];
+}
+
+function compact(list) {
+  return list.filter(Boolean);
+}
+
+function sentenceCase(text) {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function cleanTitle(text) {
+  const withoutArticle = text.replace(/^(a|an|the)\s+/i, "");
+  return sentenceCase(withoutArticle.length > 48 ? `${withoutArticle.slice(0, 45)}…` : withoutArticle);
+}
+
+function getDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
 function formatDate(date) {
-  return date.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+  return date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 }
 
 function formatDateTime(date) {
-  return date.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
-function truncate(text, max) {
-  return text.length > max ? `${text.slice(0, max).trim()}…` : text;
+function seededRandom(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return function random() {
+    h += h << 13;
+    h ^= h >>> 7;
+    h += h << 3;
+    h ^= h >>> 17;
+    h += h << 5;
+    return ((h >>> 0) / 4294967296);
+  };
 }
 
 function escapeHtml(value) {
@@ -1117,84 +1055,4 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function withArticle(phrase) {
-  const clean = String(phrase || "").trim();
-  if (!clean) return clean;
-
-  // Some image fragments already contain their own determiner, are plural,
-  // or work better as uncountable material. This prevents phrases like
-  // "an a museum postcard" or "a wet socks".
-  const lower = clean.toLowerCase();
-  const noArticleStarters = [
-    "a ",
-    "an ",
-    "the ",
-    "your ",
-    "my ",
-    "our ",
-    "this ",
-    "that ",
-    "these ",
-    "those ",
-    "someone ",
-    "something ",
-    "two ",
-    "some "
-  ];
-  const noArticlePhrases = new Set([
-    "dust on a bookshelf",
-    "light moving across a wall",
-    "orange light on rock",
-    "wet socks",
-    "clouds moving over a ridge",
-    "crossed-out working"
-  ]);
-
-  if (noArticleStarters.some(starter => lower.startsWith(starter)) || noArticlePhrases.has(lower)) {
-    return clean;
-  }
-
-  const article = /^[aeiou]/i.test(clean) ? "an" : "a";
-  return `${article} ${clean}`;
-}
-
-
-function promptKey(prompt) {
-  return `${prompt.title}|${prompt.text}`.toLowerCase().replace(/\s+/g, " ").slice(0, 220);
-}
-
-function getRecentPromptKeys() {
-  try {
-    return JSON.parse(localStorage.getItem("graceNotesRecentPromptKeys") || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function rememberPrompt(prompt) {
-  const recent = getRecentPromptKeys();
-  const next = [promptKey(prompt), ...recent.filter(key => key !== promptKey(prompt))].slice(0, 35);
-  localStorage.setItem("graceNotesRecentPromptKeys", JSON.stringify(next));
-}
-
-function sentenceCase(value) {
-  const text = String(value || "").trim();
-  if (!text) return text;
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-function toast(message) {
-  const existing = document.querySelector(".toast");
-  if (existing) existing.remove();
-  const toastEl = document.createElement("div");
-  toastEl.className = "toast";
-  toastEl.textContent = message;
-  document.body.appendChild(toastEl);
-  requestAnimationFrame(() => toastEl.classList.add("show"));
-  setTimeout(() => {
-    toastEl.classList.remove("show");
-    setTimeout(() => toastEl.remove(), 180);
-  }, 1800);
-}
-
-init();
+document.addEventListener("DOMContentLoaded", init);
