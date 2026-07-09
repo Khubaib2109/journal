@@ -290,8 +290,8 @@ const promptTemplates = [
     const question = pick(topic.questions, rng);
     const secondLine = secondary ? `Then pass the same moment through ${secondary.name.toLowerCase()}: what changes?` : `Let ${thinker} sit beside the thought without turning the entry into an essay.`;
     return {
-      title: `Begin with ${articleFor(image)} ${image}`,
-      text: `Begin with ${articleFor(image)} ${image}. Use it to think about ${tension}. ${question}`,
+      title: `Begin with ${withArticle(image)}`,
+      text: `Begin with ${withArticle(image)}. Use it to think about ${tension}. ${question}`,
       followups: [secondLine, mood.instruction, pick(lengthGuides[length], rng), pick(mood.closers, rng)]
     };
   },
@@ -304,7 +304,7 @@ const promptTemplates = [
       title: `The hidden argument of the day`,
       text: `Assume today was secretly making an argument about ${tension}. What evidence did it offer? What did it leave out?`,
       followups: [
-        `Use ${articleFor(image)} ${image} as your first piece of evidence.`,
+        `Use ${withArticle(image)} as your first piece of evidence.`,
         `Imagine ${thinker} disagreeing with your interpretation.${secondaryBit}`,
         mood.instruction,
         pick(lengthGuides[length], rng)
@@ -319,7 +319,7 @@ const promptTemplates = [
       title: `A letter from the question`,
       text: `Write a letter from this question to yourself: “${question}” Let it be kind, accusatory, funny, or badly timed.`,
       followups: [
-        `It should mention ${articleFor(image)} ${image}.`,
+        `It should mention ${withArticle(image)}.`,
         secondary ? `It should also misunderstand something about ${secondary.name.toLowerCase()}.` : `It can borrow one habit of mind from ${thinker}.`,
         mood.instruction,
         pick(mood.closers, rng)
@@ -347,7 +347,7 @@ const promptTemplates = [
     const thinker = pick(topic.thinkers, rng);
     return {
       title: `Make the small thing stand for the whole`,
-      text: `Choose ${articleFor(image)} ${image}. Look at it hard enough that it starts to stand in for the whole day. What does it reveal about ${tension}?`,
+      text: `Choose ${withArticle(image)}. Look at it hard enough that it starts to stand in for the whole day. What does it reveal about ${tension}?`,
       followups: [
         `Do not begin with a grand claim. Begin with what was physically there.`,
         secondary ? `Halfway through, let ${secondary.name.toLowerCase()} interrupt the scene.` : `Halfway through, let ${thinker} ask an inconvenient question.`,
@@ -389,7 +389,6 @@ const els = {
   datePill: document.querySelector("#datePill"),
   generateButton: document.querySelector("#generateButton"),
   dailyButton: document.querySelector("#dailyButton"),
-  todaysPromptButton: document.querySelector("#todaysPromptButton"),
   copyPromptButton: document.querySelector("#copyPromptButton"),
   entryTitle: document.querySelector("#entryTitle"),
   entryText: document.querySelector("#entryText"),
@@ -397,11 +396,12 @@ const els = {
   clearEntryButton: document.querySelector("#clearEntryButton"),
   entriesList: document.querySelector("#entriesList"),
   searchEntries: document.querySelector("#searchEntries"),
+  filterTopicSelect: document.querySelector("#filterTopicSelect"),
+  exportTextButton: document.querySelector("#exportTextButton"),
   exportButton: document.querySelector("#exportButton"),
   importInput: document.querySelector("#importInput"),
   topicsGrid: document.querySelector("#topicsGrid"),
-  themeToggle: document.querySelector("#themeToggle"),
-  samplePrompt: document.querySelector("#samplePrompt")
+  themeToggle: document.querySelector("#themeToggle")
 };
 
 function init() {
@@ -409,16 +409,16 @@ function init() {
   populateSelectors();
   renderTopics();
   loadEntries();
-  const openingSeed = seededRandom(getDateKey() + "opening");
-  els.samplePrompt.textContent = pick(topics.flatMap(topic => topic.questions), openingSeed);
   generatePrompt({ daily: true });
   attachEvents();
+  initialiseScrollReveals();
 }
 
 function populateSelectors() {
   topics.forEach(topic => {
     const option = new Option(topic.name, topic.id);
     els.topicSelect.add(option);
+    els.filterTopicSelect.add(new Option(topic.name, topic.name));
   });
 
   els.secondaryTopicSelect.add(new Option("None", "none"));
@@ -431,14 +431,12 @@ function populateSelectors() {
 function attachEvents() {
   els.generateButton.addEventListener("click", () => generatePrompt({ daily: false }));
   els.dailyButton.addEventListener("click", () => generatePrompt({ daily: true }));
-  els.todaysPromptButton.addEventListener("click", () => {
-    generatePrompt({ daily: true });
-    document.querySelector("#prompter").scrollIntoView({ behavior: "smooth" });
-  });
   els.copyPromptButton.addEventListener("click", copyPrompt);
   els.saveEntryButton.addEventListener("click", saveEntry);
   els.clearEntryButton.addEventListener("click", clearEntry);
   els.searchEntries.addEventListener("input", renderEntries);
+  els.filterTopicSelect.addEventListener("change", renderEntries);
+  els.exportTextButton.addEventListener("click", exportEntriesAsText);
   els.exportButton.addEventListener("click", exportEntries);
   els.importInput.addEventListener("change", importEntries);
   els.themeToggle.addEventListener("click", toggleTheme);
@@ -490,6 +488,11 @@ function renderPrompt() {
     p.textContent = line;
     els.promptFollowups.appendChild(p);
   });
+
+  const card = document.querySelector(".prompt-card");
+  card.classList.remove("prompt-fresh");
+  void card.offsetWidth;
+  card.classList.add("prompt-fresh");
 }
 
 function copyPrompt() {
@@ -541,16 +544,26 @@ function persistEntries() {
 
 function renderEntries() {
   const query = els.searchEntries.value.trim().toLowerCase();
+  const selectedTopic = els.filterTopicSelect.value;
   const entries = state.entries.filter(entry => {
-    const haystack = [entry.title, entry.body, entry.prompt?.text, entry.prompt?.topic, entry.prompt?.secondaryTopic].join(" ").toLowerCase();
-    return haystack.includes(query);
+    const entryTopic = entry.prompt?.topic || "";
+    const topicMatches = selectedTopic === "all" || entryTopic === selectedTopic;
+    const haystack = [
+      entry.title,
+      entry.body,
+      entry.prompt?.title,
+      entry.prompt?.text,
+      entry.prompt?.topic,
+      entry.prompt?.secondaryTopic
+    ].join(" ").toLowerCase();
+    return topicMatches && haystack.includes(query);
   });
 
   els.entriesList.innerHTML = "";
   if (!entries.length) {
     const empty = document.createElement("p");
-    empty.className = "hero-text";
-    empty.textContent = state.entries.length ? "No entries match that search." : "No saved entries yet. Your first one can be tiny.";
+    empty.className = "empty-state";
+    empty.textContent = state.entries.length ? "No entries match that filter." : "No saved entries yet. Your first one can be tiny.";
     els.entriesList.appendChild(empty);
     return;
   }
@@ -558,11 +571,14 @@ function renderEntries() {
   entries.forEach(entry => {
     const card = document.createElement("article");
     card.className = "entry-card";
+    const topicLabel = entry.prompt?.secondaryTopic
+      ? `${entry.prompt.topic} × ${entry.prompt.secondaryTopic}`
+      : entry.prompt?.topic || "No topic";
     card.innerHTML = `
       <div class="entry-card-header">
         <div>
           <h3>${escapeHtml(entry.title)}</h3>
-          <p class="entry-date">${formatDateTime(new Date(entry.createdAt))}</p>
+          <p class="entry-date">${escapeHtml(topicLabel)} · ${formatDateTime(new Date(entry.createdAt))}</p>
         </div>
         <button class="delete-button" type="button" aria-label="Delete entry" data-delete="${entry.id}">Delete</button>
       </div>
@@ -583,19 +599,54 @@ function renderEntries() {
   });
 }
 
+function exportEntriesAsText() {
+  if (!state.entries.length) {
+    toast("No entries to export yet");
+    return;
+  }
+
+  const lines = state.entries.map(entry => {
+    const prompt = entry.prompt || {};
+    const topicLine = prompt.secondaryTopic
+      ? `${prompt.topic} × ${prompt.secondaryTopic}`
+      : prompt.topic || "No topic recorded";
+    const followups = Array.isArray(prompt.followups) && prompt.followups.length
+      ? `\nFollow-ups:\n${prompt.followups.map(item => `- ${item}`).join("\n")}`
+      : "";
+
+    return [
+      "============================================================",
+      entry.title || "Untitled entry",
+      formatDateTime(new Date(entry.createdAt)),
+      `Topic: ${topicLine}`,
+      "",
+      "Prompt:",
+      prompt.text || "Prompt unavailable",
+      followups,
+      "",
+      "Entry:",
+      entry.body || ""
+    ].join("\n");
+  });
+
+  downloadFile(
+    lines.join("\n\n"),
+    `grace-notes-entries-${getDateKey()}.txt`,
+    "text/plain;charset=utf-8"
+  );
+}
+
 function exportEntries() {
   const payload = {
     exportedAt: new Date().toISOString(),
     app: "Grace Notes",
     entries: state.entries
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `grace-notes-entries-${getDateKey()}.json`;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadFile(
+    JSON.stringify(payload, null, 2),
+    `grace-notes-entries-${getDateKey()}.json`,
+    "application/json"
+  );
 }
 
 function importEntries(event) {
@@ -643,6 +694,39 @@ function renderTopics() {
       document.querySelector("#prompter").scrollIntoView({ behavior: "smooth" });
     });
   });
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function initialiseScrollReveals() {
+  const items = document.querySelectorAll(".reveal-on-scroll");
+  if (!items.length) return;
+
+  if (!("IntersectionObserver" in window)) {
+    items.forEach(item => item.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  items.forEach(item => observer.observe(item));
 }
 
 function toggleTheme() {
@@ -708,8 +792,45 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function articleFor(phrase) {
-  return /^[aeiou]/i.test(phrase) ? "an" : "a";
+function withArticle(phrase) {
+  const clean = String(phrase || "").trim();
+  if (!clean) return clean;
+
+  // Some image fragments already contain their own determiner, are plural,
+  // or work better as uncountable material. This prevents phrases like
+  // "an a museum postcard" or "a wet socks".
+  const lower = clean.toLowerCase();
+  const noArticleStarters = [
+    "a ",
+    "an ",
+    "the ",
+    "your ",
+    "my ",
+    "our ",
+    "this ",
+    "that ",
+    "these ",
+    "those ",
+    "someone ",
+    "something ",
+    "two ",
+    "some "
+  ];
+  const noArticlePhrases = new Set([
+    "dust on a bookshelf",
+    "light moving across a wall",
+    "orange light on rock",
+    "wet socks",
+    "clouds moving over a ridge",
+    "crossed-out working"
+  ]);
+
+  if (noArticleStarters.some(starter => lower.startsWith(starter)) || noArticlePhrases.has(lower)) {
+    return clean;
+  }
+
+  const article = /^[aeiou]/i.test(clean) ? "an" : "a";
+  return `${article} ${clean}`;
 }
 
 function toast(message) {
