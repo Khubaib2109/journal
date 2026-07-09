@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grace Notes</title>
-  <meta name="description" content="A philosophy-led journalling prompt generator for daily reflection." />
+  <meta name="description" content="A philosophy-led journalling prompt generator for loose daily thoughts and musings." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -26,7 +26,7 @@
       <p class="eyebrow small-eyebrow">Philosophy journalling</p>
       <h1>Grace Notes</h1>
       <p>
-        A daily prompt generator for philosophy, memory, art, selfhood, law, relationships, mountains, and the odd little scenes that become more interesting when you stay with them.
+        A small prompt generator for philosophical wandering: stray thoughts, images, memory, art, selfhood, law, relationships, mountains, and whatever the day quietly left behind.
       </p>
     </div>
   </header>
@@ -35,7 +35,7 @@
     <section id="prompter" class="prompter section first-section reveal-on-scroll" aria-labelledby="prompter-title">
       <div class="section-heading compact-heading">
         <p class="eyebrow">Prompt generator</p>
-        <h2 id="prompter-title">Choose a topic, then write beneath it.</h2>
+        <h2 id="prompter-title">Pick a topic. Let the thought wander.</h2>
       </div>
 
       <div class="controls-panel">
@@ -48,34 +48,44 @@
           <select id="secondaryTopicSelect"></select>
         </label>
         <label>
-          Writing mood
+          Voice / weather
           <select id="moodSelect">
-            <option value="tender">Tender and inward</option>
-            <option value="analytical">Analytical but human</option>
-            <option value="literary">Literary and image-led</option>
+            <option value="unforced" selected>Unforced and wandering</option>
+            <option value="literary">Literary / image-led</option>
+            <option value="analytical">Curious / essay-ish</option>
             <option value="strange">A little strange</option>
-            <option value="plain">Plain and direct</option>
+            <option value="tender">Soft but not sentimental</option>
           </select>
         </label>
         <label>
-          Time available
+          Entry length
           <select id="lengthSelect">
-            <option value="five">5 minutes</option>
-            <option value="fifteen" selected>15 minutes</option>
-            <option value="long">Long entry</option>
+            <option value="short">Scrap / a few lines</option>
+            <option value="medium" selected>Wandering entry</option>
+            <option value="long">Longer meander</option>
           </select>
         </label>
         <label>
           Prompt shape
           <select id="promptStyleSelect">
-            <option value="mixed" selected>Mixed / surprise me</option>
-            <option value="scene">Scene-based</option>
-            <option value="dialogue">Dialogue</option>
-            <option value="memory">Memory</option>
-            <option value="argument">Argument / essayish</option>
-            <option value="body">Body and senses</option>
-            <option value="ethical">Ethical</option>
-            <option value="strangeform">Strange form</option>
+            <option value="mixed" selected>Mixed drift</option>
+            <option value="stray">Stray thought</option>
+            <option value="image">Object / scene</option>
+            <option value="question">Loose question</option>
+            <option value="philosopher">Philosopher spark</option>
+            <option value="contradiction">Contradiction</option>
+            <option value="memory">Memory glimmer</option>
+            <option value="sentence">First sentence</option>
+            <option value="form">Odd form</option>
+          </select>
+        </label>
+        <label>
+          Philosophy references
+          <select id="referenceSelect">
+            <option value="subtle" selected>Quiet companion</option>
+            <option value="thinker">One thinker</option>
+            <option value="school">School / thread</option>
+            <option value="none">None</option>
           </select>
         </label>
       </div>
@@ -87,7 +97,8 @@
         </div>
         <h3 id="promptTitle">Your prompt</h3>
         <p id="promptText" class="prompt-text"></p>
-        <div id="promptFollowups" class="followups"></div>
+        <div id="promptReference"></div>
+        <div id="promptFollowups" class="followups loose-notes"></div>
         <div class="prompt-actions">
           <button id="generateButton" class="primary-button" type="button">Generate prompt</button>
           <button id="dailyButton" class="secondary-button" type="button">Use today’s prompt</button>
@@ -105,7 +116,7 @@
         <label for="entryTitle">Entry title</label>
         <input id="entryTitle" type="text" placeholder="e.g. Time felt strange in the supermarket" />
         <label for="entryText">Entry</label>
-        <textarea id="entryText" rows="15" placeholder="Start anywhere: the object, the mood, the contradiction, the tiny thing you noticed..."></textarea>
+        <textarea id="entryText" rows="15" placeholder="Start anywhere. A scene, a sentence, a mood, the tangent that would not leave you alone..."></textarea>
         <div class="entry-actions">
           <button id="saveEntryButton" class="primary-button" type="button">Save entry</button>
           <button id="clearEntryButton" class="secondary-button" type="button">Clear</button>
