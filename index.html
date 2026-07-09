@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grace Notes — The Examined Day</title>
+  <title>Grace Notes</title>
   <meta name="description" content="A philosophy-led journalling prompt generator for daily reflection." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
-  <header class="hero">
+
+  <header class="site-header">
     <nav class="topbar" aria-label="Top navigation">
       <a class="brand" href="#top" aria-label="Grace Notes home">
         <span class="brand-mark">✦</span>
@@ -21,43 +22,20 @@
       </div>
     </nav>
 
-    <section id="top" class="hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">The Examined Day</p>
-        <h1>Daily prompts for strange, tender, philosophical journalling.</h1>
-        <p class="hero-text">
-          Choose a topic, set the mood, and let the prompt engine build a question from philosophy, literature, memory, art, mountains, and ordinary life.
-        </p>
-        <div class="hero-buttons">
-          <a class="primary-button" href="#prompter">Start writing</a>
-          <button class="secondary-button" id="todaysPromptButton" type="button">Give me today’s prompt</button>
-        </div>
-      </div>
-      <aside class="hero-card" aria-label="Sample prompt">
-        <p class="card-label">Today’s possible question</p>
-        <p id="samplePrompt" class="sample-prompt">
-          What part of today felt almost meaningful before you tried to explain it?
-        </p>
-        <p class="sample-note">Not self-improvement. More like keeping a small lantern lit.</p>
-      </aside>
-    </section>
+    <div id="top" class="app-intro reveal-on-scroll">
+      <p class="eyebrow small-eyebrow">Philosophy journalling</p>
+      <h1>Grace Notes</h1>
+      <p>
+        A daily prompt generator for thoughts about time, art, selfhood, memory, meaning, law, mountains, and other things that refuse to stay small.
+      </p>
+    </div>
   </header>
 
   <main>
-    <section class="section intro-section" aria-labelledby="why-title">
-      <div>
-        <p class="eyebrow">Built around your recurring themes</p>
-        <h2 id="why-title">Less “five things I’m grateful for”, more “what did time do to me today?”</h2>
-      </div>
-      <p>
-        The prompts are generated from topic banks rather than pulled from one fixed list. Each prompt combines a philosophical tension, a concrete image, a writing move, and a closing question, so the site can keep producing fresh entries over time without needing an API or backend.
-      </p>
-    </section>
-
-    <section id="prompter" class="prompter section" aria-labelledby="prompter-title">
-      <div class="section-heading">
+    <section id="prompter" class="prompter section first-section reveal-on-scroll" aria-labelledby="prompter-title">
+      <div class="section-heading compact-heading">
         <p class="eyebrow">Prompt generator</p>
-        <h2 id="prompter-title">Choose your question for the day.</h2>
+        <h2 id="prompter-title">Choose a topic, then write beneath it.</h2>
       </div>
 
       <div class="controls-panel">
@@ -99,48 +77,41 @@
         <div id="promptFollowups" class="followups"></div>
         <div class="prompt-actions">
           <button id="generateButton" class="primary-button" type="button">Generate prompt</button>
-          <button id="dailyButton" class="secondary-button" type="button">Use today’s seeded prompt</button>
+          <button id="dailyButton" class="secondary-button" type="button">Use today’s prompt</button>
           <button id="copyPromptButton" class="ghost-button" type="button">Copy prompt</button>
         </div>
       </div>
     </section>
 
-    <section class="section writing-section" aria-labelledby="write-title">
+    <section class="section writing-section reveal-on-scroll" aria-labelledby="write-title">
       <div class="section-heading compact-heading">
-        <p class="eyebrow">Write here or copy elsewhere</p>
-        <h2 id="write-title">Journal entry</h2>
+        <p class="eyebrow">Your entry</p>
+        <h2 id="write-title">Write here</h2>
       </div>
-      <div class="journal-grid">
-        <div class="entry-box">
-          <label for="entryTitle">Entry title</label>
-          <input id="entryTitle" type="text" placeholder="e.g. Time felt weird in the supermarket" />
-          <label for="entryText">Entry</label>
-          <textarea id="entryText" rows="14" placeholder="Start anywhere: the object, the mood, the contradiction, the tiny thing you noticed..."></textarea>
-          <div class="entry-actions">
-            <button id="saveEntryButton" class="primary-button" type="button">Save entry</button>
-            <button id="clearEntryButton" class="secondary-button" type="button">Clear</button>
-          </div>
+      <div class="entry-box full-width-entry">
+        <label for="entryTitle">Entry title</label>
+        <input id="entryTitle" type="text" placeholder="e.g. Time felt strange in the supermarket" />
+        <label for="entryText">Entry</label>
+        <textarea id="entryText" rows="15" placeholder="Start anywhere: the object, the mood, the contradiction, the tiny thing you noticed..."></textarea>
+        <div class="entry-actions">
+          <button id="saveEntryButton" class="primary-button" type="button">Save entry</button>
+          <button id="clearEntryButton" class="secondary-button" type="button">Clear</button>
         </div>
-        <aside class="writing-ritual">
-          <h3>A small ritual</h3>
-          <ol>
-            <li>Choose the topic that is already bothering you.</li>
-            <li>Write one concrete scene before making any argument.</li>
-            <li>Let the entry end unresolved, unless it naturally finds an ending.</li>
-          </ol>
-          <p>Good entries can be intelligent without being tidy. A fragment is allowed to be enough.</p>
-        </aside>
       </div>
     </section>
 
-    <section id="entries" class="section entries-section" aria-labelledby="entries-title">
+    <section id="entries" class="section entries-section reveal-on-scroll" aria-labelledby="entries-title">
       <div class="section-heading compact-heading">
         <p class="eyebrow">Private to this browser</p>
         <h2 id="entries-title">Saved entries</h2>
       </div>
       <div class="entries-toolbar">
         <input id="searchEntries" type="search" placeholder="Search entries or prompts" />
-        <button id="exportButton" class="secondary-button" type="button">Export JSON</button>
+        <select id="filterTopicSelect" aria-label="Filter entries by topic">
+          <option value="all">All topics</option>
+        </select>
+        <button id="exportTextButton" class="secondary-button" type="button">Export text</button>
+        <button id="exportButton" class="ghost-button" type="button">Export backup JSON</button>
         <label class="import-label">
           Import JSON
           <input id="importInput" type="file" accept="application/json" />
@@ -149,7 +120,7 @@
       <div id="entriesList" class="entries-list"></div>
     </section>
 
-    <section class="section topics-section" aria-labelledby="topics-title">
+    <section class="section topics-section reveal-on-scroll" aria-labelledby="topics-title">
       <div class="section-heading compact-heading">
         <p class="eyebrow">Prompt map</p>
         <h2 id="topics-title">The philosophy shelves</h2>
