@@ -371,6 +371,48 @@ button:active,
   line-height: 1.55;
 }
 
+
+.philosophy-hint {
+  margin: -2px 0 18px;
+  padding: 13px 14px;
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  transition: transform 220ms ease, background-color 220ms ease, border-color 220ms ease;
+}
+
+.philosophy-hint span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.philosophy-hint p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.loose-notes {
+  padding-left: 0;
+}
+
+.loose-notes p {
+  position: relative;
+  padding-left: 18px;
+}
+
+.loose-notes p::before {
+  content: "↝";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+}
+
 .entry-box {
   border-radius: var(--radius-lg);
   padding: clamp(18px, 3vw, 26px);
@@ -508,7 +550,8 @@ button:active,
   transition: opacity 520ms ease, transform 520ms ease;
 }
 
-.reveal-on-scroll.is-visible {
+.reveal-on-scroll.is-visible,
+.reveal-on-scroll.revealed {
   opacity: 1;
   transform: translateY(0);
 }
@@ -548,6 +591,27 @@ button:active,
 }
 
 @media (max-width: 680px) {
+  h1 {
+    font-size: clamp(1.85rem, 10vw, 2.6rem);
+  }
+
+  h2 {
+    font-size: clamp(1.25rem, 7vw, 1.75rem);
+  }
+
+  .prompt-text {
+    font-size: clamp(1.35rem, 7vw, 2rem);
+    line-height: 1.14;
+  }
+
+  .prompt-meta {
+    margin-bottom: 10px;
+  }
+
+  .philosophy-hint {
+    padding: 12px;
+  }
+
   .site-header,
   main,
   .site-footer {
